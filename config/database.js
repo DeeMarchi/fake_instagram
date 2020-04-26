@@ -1,7 +1,7 @@
 module.exports = {
-    username: 'dev',
+    username: 'root',
     password: '1234567',
-    database: 'crud_sequelize',
+    database: 'fake-instagram',
     host: 'localhost',
     dialect: 'mysql',
 };
