@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const { User } = require('../models');
+const { Op } = require('sequelize');
 
 const IndexController = {
 
@@ -14,13 +16,29 @@ const IndexController = {
         res.render('auth/register');
     },
 
-    registrar: (req, res) => {
+    registrar: async (req, res) => {
         console.log(req.body);
 
         const { email, nomeCompleto, usuario, senha } = req.body;
-        const senhaCrypto = bcrypt.hashSync(senha, 10);
 
-        console.log(senhaCrypto);
+        const [user, naoPresente] = await User.findOrCreate({
+            where: {
+                [Op.or]: [
+                    { name: nomeCompleto },
+                    { username: usuario },
+                    { email: email },
+                ],
+            },
+            defaults: {
+                name: nomeCompleto,
+                username: usuario,
+                email: email,
+                password: bcrypt.hashSync(senha, 10),
+            },
+        });
+        if (!naoPresente) {
+            return res.send("Parece que já temos um usuário com esses dados cadastrados!");
+        }
     },
 
     home: (req, res) => {
